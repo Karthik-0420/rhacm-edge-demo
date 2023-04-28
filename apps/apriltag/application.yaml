@@ -1,0 +1,43 @@
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: apriltag-app-latest
+  namespace: apriltag
+spec:
+  type: GitHub
+  pathname: https://github.com/AndyYuen/rhacm-edge-demo.git
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: apriltag-app
+  namespace: apriltag
+spec:
+  componentKinds:
+  - group: apps.open-cluster-management.io
+    kind: Subscription
+  descriptor: {}
+  selector:
+    matchExpressions:
+    - key: app
+      operator: In
+      values:
+      - apriltag-app
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  name: apriltag-app
+  namespace: apriltag
+  labels:
+    app: apriltag-app
+  annotations:
+    apps.open-cluster-management.io/github-path: resources/apriltag
+spec:
+  channel: apriltag/apriltag-app-latest
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: demo-clusters
+
